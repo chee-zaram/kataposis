@@ -1,0 +1,18 @@
+# General
+*
+!*.*
+!*/
+~/*
+.DS_Store
+.vscode
+.idea
+debug
+.bundle
+*.swp
+*.crt
+*.csr
+*.key
+*.prof
+*.test
+*.pem
+*.env
