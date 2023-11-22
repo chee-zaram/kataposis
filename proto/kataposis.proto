@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package logger;
+
+option go_package = "./pb";
+
+service Logger {
+    rpc Log(LoggerRequest) returns (LoggerResponse);
+}
+
+message LoggerRequest {
+    string resourceID = 4;
+    string level = 1;
+    string msg = 2;
+    string timestamp = 3;
+}
+
+message LoggerResponse {
+    optional string error = 1;
+}
