@@ -8,39 +8,19 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-var db *pgx.Conn
-
-func GetDB() *pgx.Conn {
-	return db
+// Connect creates a connection to the database using the configuration
+// options specified by cfg.
+func Connect(cfg *config.DBConfig) (*pgx.Conn, error) {
+	url := dbURL(cfg)
+	return pgx.Connect(context.Background(), url)
 }
 
-func Connect(conf *config.DBConfig) (*pgx.Conn, error) {
-	var err error
-
-	dbURL, err := dbURL(conf)
-	if err != nil {
-		return nil, err
-	}
-
-	db, err = pgx.Connect(context.Background(), dbURL)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
-}
-
-func dbURL(conf *config.DBConfig) (string, error) {
-	dbConfig, err := config.NewConfig()
-	if err != nil {
-		return "", err
-	}
-
+func dbURL(cfg *config.DBConfig) string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s/%s",
-		dbConfig.PGUser,
-		dbConfig.PGPass,
-		dbConfig.PGAddr,
-		dbConfig.PGDBName,
-	), nil
+		cfg.PGUser,
+		cfg.PGPass,
+		cfg.PGAddr,
+		cfg.PGDBName,
+	)
 }
