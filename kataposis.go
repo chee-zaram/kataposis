@@ -2,6 +2,8 @@ package kataposis
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"cheezaram.tech/kataposis/internal/config"
@@ -31,6 +33,22 @@ type LogEntry struct {
 	message    logMessage
 	level      logLevel
 	timestamp  time.Time
+}
+
+func (l LogEntry) GetRID() logResourceID {
+	return l.resourceID
+}
+
+func (l LogEntry) GetMsg() logMessage {
+	return l.message
+}
+
+func (l LogEntry) GetTimestamp() time.Time {
+	return l.timestamp
+}
+
+func (l LogEntry) GetLevel() logLevel {
+	return l.level
 }
 
 type (
@@ -101,6 +119,90 @@ func (l *LogEntry) Timestamp(ts time.Time) error {
 	defer pgDB.Close(context.Background())
 
 	return addLogEntry(l)
+}
+
+// Fetch is used to fetch log entries from the database.
+// It performs the query to the database based on the arguments provided.
+// If an argument is the default value for the type, that argument is not
+// included in the query string.
+//
+// Fetch returns a slice of LogEntry objects and an error if the query fails.
+func (l *LogEntry) Fetch(
+	msg logMessage, rid logResourceID, level logLevel, beforeTime *time.Time,
+	afterTime *time.Time,
+) ([]LogEntry, error) {
+	var queryBuilder strings.Builder
+	queryBuilder.WriteString(
+		"SELECT rid, level, message, timestamp FROM logs WHERE 1 = 1",
+	)
+
+	if msg != "" {
+		queryBuilder.WriteString(fmt.Sprintf(" AND message LIKE '%%%s%%'", msg))
+	}
+
+	if rid != "" {
+		queryBuilder.WriteString(fmt.Sprintf(" AND rid = '%s'", rid))
+	}
+
+	if level != "" {
+		queryBuilder.WriteString(fmt.Sprintf(" AND level = '%s'", level))
+	}
+
+	if beforeTime != nil {
+		queryBuilder.WriteString(
+			fmt.Sprintf(" AND timestamp < '%s'", beforeTime.Format(time.RFC3339)))
+	}
+
+	if afterTime != nil {
+		queryBuilder.WriteString(
+			fmt.Sprintf(" AND timestamp > '%s'", afterTime.Format(time.RFC3339)))
+	}
+
+	var err error
+	pgDB, err = db.Connect(cfg)
+	if err != nil {
+		return nil, err
+	}
+	defer pgDB.Close(context.Background())
+
+	rows, err := pgDB.Query(context.Background(), queryBuilder.String())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []LogEntry
+	for rows.Next() {
+		entry := new(LogEntry)
+		var (
+			queryRID   string
+			queryMsg   string
+			queryLevel string
+			queryTime  time.Time
+		)
+
+		if err = rows.Scan(
+			&queryRID,
+			&queryMsg,
+			&queryLevel,
+			&queryTime,
+		); err != nil {
+			return nil, err
+		}
+
+		entry.resourceID = logResourceID(queryRID)
+		entry.message = logMessage(queryMsg)
+		entry.level = logLevel(queryLevel)
+		entry.timestamp = queryTime
+
+		result = append(result, *entry)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func WithPGUser(u string) configValues {
