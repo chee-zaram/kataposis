@@ -33,6 +33,76 @@ type LogEntry struct {
 	timestamp  time.Time
 }
 
+type (
+	logResourceID string
+	logMessage    string
+	logLevel      string
+	logTimestamp  time.Time
+)
+
+// Msg is used to set the message of the log entry. It takes in a `logMessage`
+// and returns a `LogEntry` object.
+//
+// The log entry is never saved to the database until the `Timestamp` method
+// is called.
+func (l *LogEntry) Msg(msg logMessage) *LogEntry {
+	if l == nil {
+		panic("cannot call Msg on nil LogEntry")
+	}
+
+	l.message = msg
+	return l
+}
+
+// RID sets the `resourceID` for the log entry. It takes in a `logResourceID`
+// and returns a LogEntry object.
+//
+// The log entry is never saved to the database until the `Timestamp` method
+// is called.
+func (l *LogEntry) RID(rid logResourceID) *LogEntry {
+	if l == nil {
+		panic("cannot call RID on nil LogEntry")
+	}
+
+	l.resourceID = rid
+	return l
+}
+
+// Level is used to set the log level of the entry. It takes in a logLevel and
+// returns a LogEntry object.
+//
+// The log entry is never saved to the database until the `Timestamp` method
+// is called.
+func (l *LogEntry) Level(level logLevel) *LogEntry {
+	if l == nil {
+		panic("cannot call Level on nil LogEntry")
+	}
+
+	l.level = level
+	return l
+}
+
+// Timestamp is used to set the timestamp of the entry. It takes in a
+// logTimestamp and saves the entry to the database specified in the
+// configuration.
+//
+// It returns an error if the database connection cannot be established.
+func (l *LogEntry) Timestamp(ts time.Time) error {
+	if l == nil {
+		panic("cannot call Timestamp on nil LogEntry")
+	}
+
+	l.timestamp = ts
+
+	var err error
+	if pgDB, err = db.Connect(cfg); err != nil {
+		return err
+	}
+	defer pgDB.Close(context.Background())
+
+	return addLogEntry(l)
+}
+
 func WithPGUser(u string) configValues {
 	return func(cfg *config.DBConfig) {
 		cfg.PGUser = u
