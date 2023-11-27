@@ -126,6 +126,8 @@ func (l *LogEntry) Timestamp(ts time.Time) error {
 // If an argument is the default value for the type, that argument is not
 // included in the query string.
 //
+// `msg` is used to perform a LIKE query on the `message` column.
+//
 // Fetch returns a slice of LogEntry objects and an error if the query fails.
 func (l *LogEntry) Fetch(
 	msg logMessage, rid logResourceID, level logLevel, beforeTime *time.Time,
