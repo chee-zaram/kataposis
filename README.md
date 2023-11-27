@@ -156,7 +156,11 @@ If you find any bugs, feel free to
 [open an issue](https://github.com/chee-zaram/kataposis/issues). Pull request
 for new features or bug fixes are welcome.
 
-See [CONTRIBUTING](./CONTRIBUTING) for details.
+After commiting your changes, run the
+[utils/contributors.sh](./utils/contributors.sh) script to add yourself to the
+contributors list.
+
+See [CONTRIBUTORS](./CONTRIBUTORS) for details of all contributors.
 
 ## Licensing
 
