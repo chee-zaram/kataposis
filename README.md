@@ -85,13 +85,13 @@ the database:
 
 ```go
 func main() {
-    // Previous initialization code.
+	// Previous initialization code.
 
-    // Log a message.
-    err := log.Msg("Log message").RID("1234").Level("info").Timestamp(time.Now())
-    if err != nil {
+	// Log a message.
+	err := log.Msg("Log message").RID("1234").Level("info").Timestamp(time.Now())
+	if err != nil {
 		// Handle error
-    }
+	}
 }
 ```
 
@@ -102,25 +102,26 @@ You can fetch log entries from the database based on specific criteria using the
 
 ```go
 func main() {
-    // Previous initialization code.
+	// Previous initialization code.
 
-    afterTime := time.Now()
-    entries, err := log.Fetch(
-        "message",  // Message
-        "1234",     // Resource ID
-        "",         // Log level
-        nil,        // Before timestamp
-        &afterTime, // After timestamp
-    )
-    if err != nil {
+	afterTime := time.Now()
+	entries, err := log.Fetch(
+		"message",  // Message
+		"1234",     // Resource ID
+		"",         // Log level
+		nil,        // Before timestamp
+		&afterTime, // After timestamp
+	)
+
+	if err != nil {
 		// Handle error
-    }
+	}
 
-    // Process fetched log entries
-    for _, entry := range entries {
-        // Do something with each log entry
-        fmt.Printf("Message: %s, Timestamp: %s\n", entry.GetMsg(), entry.GetTimestamp())
-    }
+	// Process fetched log entries
+	for _, entry := range entries {
+	    // Do something with each log entry
+	    fmt.Printf("Message: %s, Timestamp: %s\n", entry.GetMsg(), entry.GetTimestamp())
+	}
 }
 ```
 
