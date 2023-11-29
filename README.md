@@ -56,14 +56,13 @@ function along with optional configuration options:
 package main
 
 import (
-	"fmt"
-	"os"
 	"time"
 
 	"cheezaram.tech/kataposis"
 )
 
 func main() {
+	var err error
 	// Initialize the logger.
 	log, err := kataposis.Init(
 		kataposis.WithPGAddr("localhost:5432"),
@@ -88,7 +87,7 @@ func main() {
 	// Previous initialization code.
 
 	// Log a message.
-	err := log.Msg("Log message").RID("1234").Level("info").Timestamp(time.Now())
+	err = log.Msg("Log message").RID("1234").Level("info").Timestamp(time.Now())
 	if err != nil {
 		// Handle error
 	}
@@ -108,8 +107,8 @@ func main() {
 	entries, err := log.Fetch(
 		"message",  // Message
 		"1234",     // Resource ID
-		"",         // Log level
-		nil,        // Before timestamp
+		"",         // Log level. Will not be included in the query condition.
+		nil,        // Before timestamp. Will not be included in the query condition.
 		&afterTime, // After timestamp
 	)
 
@@ -119,17 +118,17 @@ func main() {
 
 	// Process fetched log entries
 	for _, entry := range entries {
-	    // Do something with each log entry
-	    fmt.Printf("Message: %s, Timestamp: %s\n", entry.GetMsg(), entry.GetTimestamp())
+		// Do something with each log entry
+		fmt.Printf("Message: %s, Timestamp: %s\n", entry.GetMsg(), entry.GetTimestamp())
 	}
 }
 ```
 
-You can retrieve the value of each field using the methods of the `log.Entry`
-struct prefixed with `Get`.
+You can retrieve the value of each field using the methods of the
+`kataposis.LogEntry` struct, usually prefixed with `Get`.
 
-> NB: If any argument is set to its default value during quering, the argument
-> will not be included in the query.
+> NB: If any argument is set to its default value during fetching, the argument
+> will not be included in the query condition.
 
 #### Database Schema
 
