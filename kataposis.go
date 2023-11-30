@@ -35,18 +35,35 @@ type LogEntry struct {
 	timestamp  time.Time
 }
 
+// GetRID returns the resource ID of the log entry.
+//
+// `NB`: It should only be called on an entry returned by the `Fetch` method.
+// Calling `GetRID` on any other object will result in an undefined behavior.
 func (l LogEntry) GetRID() logResourceID {
 	return l.resourceID
 }
 
+// GetMsg returns the message of the log entry.
+//
+// `NB`: It should only be called on an entry returned by the `Fetch` method.
+// Calling `GetMsg` on any other object will result in an undefined behavior.
 func (l LogEntry) GetMsg() logMessage {
 	return l.message
 }
 
+// GetTimestamp returns the time stamp of the log entry.
+//
+// `NB`: It should only be called on an entry returned by the `Fetch` method.
+// Calling `GetTimestamp` on any other object will result in an
+// undefined behavior.
 func (l LogEntry) GetTimestamp() time.Time {
 	return l.timestamp
 }
 
+// GetLevel returns the level of the log entry.
+//
+// `NB`: It should only be called on an entry returned by the `Fetch` method.
+// Calling `GetLevel` on any other object will result in an undefined behavior.
 func (l LogEntry) GetLevel() logLevel {
 	return l.level
 }
