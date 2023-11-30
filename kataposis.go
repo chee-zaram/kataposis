@@ -152,7 +152,7 @@ func (l *LogEntry) Fetch(
 ) ([]LogEntry, error) {
 	var queryBuilder strings.Builder
 	queryBuilder.WriteString(
-		"SELECT rid, level, message, timestamp FROM logs WHERE 1 = 1",
+		"SELECT rid, message, level, timestamp FROM logs WHERE 1 = 1",
 	)
 
 	if msg != "" {
