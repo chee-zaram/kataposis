@@ -6,13 +6,18 @@ import (
 
 	"cheezaram.tech/kataposis/internal/config"
 	"github.com/jackc/pgx/v5"
+	"github.com/pkg/errors"
 )
 
 // Connect creates a connection to the database using the configuration
 // options specified by cfg.
 func Connect(cfg *config.DBConfig) (*pgx.Conn, error) {
 	url := dbURL(cfg)
-	return pgx.Connect(context.Background(), url)
+	db, err := pgx.Connect(context.Background(), url)
+	if err != nil {
+		return nil, errors.Wrap(err, "pgx.Connect failed")
+	}
+	return db, nil
 }
 
 func dbURL(cfg *config.DBConfig) string {

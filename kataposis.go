@@ -9,6 +9,7 @@ import (
 	"cheezaram.tech/kataposis/internal/config"
 	"cheezaram.tech/kataposis/internal/db"
 	"github.com/jackc/pgx/v5"
+	"github.com/pkg/errors"
 )
 
 // configValues is a function type that takes a pointer to a `config.DBConfig`.
@@ -131,7 +132,7 @@ func (l *LogEntry) Timestamp(ts time.Time) error {
 
 	var err error
 	if pgDB, err = db.Connect(cfg); err != nil {
-		return err
+		return errors.Wrap(err, "could not connect to db")
 	}
 	defer pgDB.Close(context.Background())
 
