@@ -157,7 +157,7 @@ If you find any bugs, feel free to
 for new features or bug fixes are welcome.
 
 After commiting your changes, run the
-[utils/contributors.sh](./utils/contributors.sh) script to add yourself to the
+[scripts/contributors.sh](./scripts/contributors.sh) script to add yourself to the
 contributors list.
 
 See [CONTRIBUTORS](./CONTRIBUTORS) for details of all contributors.
